@@ -1,8 +1,11 @@
 import streamlit as st
 import google.generativeai as genai
 
-# আপনার Gemini API কী এখানে সেট করুন
-genai.configure(api_key="YOUR_GEMINI_API_KEY")
+# আপনার স্ট্রীমলিট Secrets থেকে API Key সংগ্রহ
+if "GOOGLE_API_KEY" in st.secrets:
+    genai.configure(api_key=st.secrets["GOOGLE_API_KEY"])
+else:
+    st.error("API Key খুঁজে পাওয়া যায়নি। দয়া করে Manage app > Settings > Secrets-এ গিয়ে কি (Key) সেট করুন।")
 
 def generate_ecommerce_content(product_name, niche):
     model = genai.GenerativeModel('gemini-pro')
@@ -19,7 +22,7 @@ def generate_ecommerce_content(product_name, niche):
     response = model.generate_content(prompt)
     return response.text
 
-# ওয়েব ইন্টারফেস ডিজাইন
+# ওয়েব ইন্টারফেস ডিজাইন (আগের মতোই সুন্দর)
 st.set_page_config(page_title="AI E-com Pro", layout="wide")
 st.title("🚀 E-commerce AI Success Engine")
 st.subheader("আপনার পণ্যের তথ্য দিন এবং ম্যাজিক দেখুন")
@@ -35,8 +38,11 @@ with col2:
     if generate_btn:
         if product_name:
             with st.spinner('এআই আপনার জন্য সেরা কন্টেন্ট তৈরি করছে...'):
-                result = generate_ecommerce_content(product_name, niche)
-                st.markdown("### 🎯 আপনার কন্টেন্ট রেডি:")
-                st.write(result)
+                try:
+                    result = generate_ecommerce_content(product_name, niche)
+                    st.markdown("### 🎯 আপনার কন্টেন্ট রেডি:")
+                    st.write(result)
+                except Exception as e:
+                    st.error(f"একটি সমস্যা হয়েছে: {e}")
         else:
             st.error("দয়া করে পণ্যের নাম লিখুন।")
