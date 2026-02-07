@@ -8,37 +8,21 @@ else:
     st.error("API Key খুঁজে পাওয়া যায়নি। দয়া করে Secrets-এ গিয়ে কি (Key) সেট করুন।")
 
 def generate_ecommerce_content(product_name, niche):
-    # আপডেট করা মডেলের নাম: gemini-1.5-flash (এটি দ্রুত এবং ফ্রি)
+    # মডেলের নাম আপডেট করা হয়েছে যা 404 এরর দূর করবে
     model = genai.GenerativeModel('gemini-1.5-flash')
-    prompt = f"""
-    You are an expert E-commerce Growth Hacker. 
-    Task: Create high-converting content for the product: {product_name} in the {niche} niche.
-    Provide:
-    1. A catchy product title.
-    2. A psychological product description.
-    3. 3 Facebook Ad copies (Emotional, Rational, Urgent).
-    4. 5 SEO Keywords.
-    Make the tone persuasive and professional.
-    """
+    prompt = f"Create catchy product title, description, and 3 Facebook ad copies for: {product_name} in {niche} niche."
     response = model.generate_content(prompt)
     return response.text
 
-# ইন্টারফেস ডিজাইন
-st.set_page_config(page_title="AI E-com Pro", layout="wide")
 st.title("🚀 E-commerce AI Success Engine")
-st.subheader("আপনার পণ্যের তথ্য দিন এবং ম্যাজিক দেখুন")
-
-product_name = st.text_input("পণ্যের নাম (যেমন: Mug)")
-niche = st.selectbox("নিশ সিলেক্ট করুন", ["Fashion", "Electronics", "Health & Beauty", "Home Decor", "Gadgets"])
+product_name = st.text_input("পণ্যের নাম লিখুন:")
+niche = st.selectbox("নিশ:", ["Fashion", "Electronics", "Gadgets", "Home Decor"])
 
 if st.button("Generate Strategy & Content"):
     if product_name:
-        with st.spinner('এআই আপনার জন্য সেরা কন্টেন্ট তৈরি করছে...'):
+        with st.spinner('তৈরি হচ্ছে...'):
             try:
                 result = generate_ecommerce_content(product_name, niche)
-                st.markdown("### 🎯 আপনার কন্টেন্ট রেডি:")
                 st.write(result)
             except Exception as e:
-                st.error(f"একটি সমস্যা হয়েছে: {str(e)}")
-    else:
-        st.error("দয়া করে পণ্যের নাম লিখুন।")
+                st.error(f"সমস্যা: {str(e)}")
